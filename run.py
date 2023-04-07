@@ -5,7 +5,6 @@ from sqlalchemy import select
 
 from driver_reporting.database import Database, DatabaseDriverOperations
 from driver_reporting.config import HOST, USER, PASSWORD, DATABASE_NAME
-import driver_reporting.models as models
 
 def app():
     database = Database(HOST, USER, PASSWORD, DATABASE_NAME)
