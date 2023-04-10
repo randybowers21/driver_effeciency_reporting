@@ -1,5 +1,6 @@
 #PYTHON
 from datetime import datetime
+from typing import List, Optional
 #3RD PARTY
 from sqlalchemy import ForeignKey, String, Boolean, Date, Integer, Float
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -20,11 +21,11 @@ class Tractor(Base):
 
 class Fleet(Base):
     __tablename__ = 'fleet'
-    fleet_code = mapped_column(String(20), primary_key=True)
-    fleet_name = mapped_column(String(25), nullable=False)
-    is_active = mapped_column(Boolean(), nullable=False, default=True)
-    fleet_type = mapped_column(String(10), nullable=False)
-    tractors = relationship('Tractor')
+    fleet_code: Mapped[str] = mapped_column(String(20), primary_key=True)
+    fleet_name: Mapped[str] = mapped_column(String(25), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
+    fleet_type: Mapped[str] = mapped_column(String(10), nullable=False)
+    tractors: Mapped[List['Tractor']] = relationship('Tractor')
 
     def __repr__(self):
         return f'Fleet("{self.fleet_name}", Code "{self.fleet_code}")'
@@ -32,22 +33,22 @@ class Fleet(Base):
 class Driver(Base):
     __tablename__ = 'driver'
     driver_code: Mapped[str] = mapped_column(String(8), primary_key=True)
-    hire_date = mapped_column(Date, nullable=False, default=datetime.utcnow().date)
-    term_date = mapped_column(Date, default=None)
-    fleets = relationship('FleetWorkedOn', lazy=True)
+    hire_date: Mapped[datetime] = mapped_column(Date, nullable=False, default=datetime.utcnow().date)
+    term_date: Mapped[datetime] = mapped_column(Date, default=None)
+    fleets: Mapped[List['FleetWorkedOn']] = relationship('FleetWorkedOn', lazy=True)
 
     def __repr__(self):
-        return f'Driver("{self.driver_code}", Hired: "{self.hire_date}", {self.fleets})'
+        return f'Driver("{self.driver_code}", Hired: "{self.hire_date}" - Terminated: "{self.term_date}")'
 
 class FleetWorkedOn(Base):
     __tablename__ = 'fleet_worked_on'
-    driver_code = mapped_column(String(8), ForeignKey('driver.driver_code'), primary_key=True,  nullable=False)
-    fleet_code = mapped_column(String(25), ForeignKey('fleet.fleet_code'), primary_key=True,  nullable=False)
-    start_date = mapped_column(Date, nullable=False, default=datetime.utcnow().date)
-    end_date = mapped_column(Date, default=None)
+    driver_code: Mapped[str] = mapped_column(String(8), ForeignKey('driver.driver_code'), primary_key=True,  nullable=False)
+    fleet_code: Mapped[str] = mapped_column(String(25), ForeignKey('fleet.fleet_code'), primary_key=True,  nullable=False)
+    start_date: Mapped[datetime] = mapped_column(Date, nullable=False, default=datetime.utcnow().date)
+    end_date: Mapped[datetime] = mapped_column(Date, default=None)
 
-    # def __repr__(self):
-    #     return f'Driver("{self.driver_code}", Fleet: "{self.fleet_code}")'
+    def __repr__(self):
+        return f'Fleet Worked On("{self.driver_code}", Fleet: "{self.fleet_code}")'
 
 class DriverWorkWeek(Base):
     __tablename__ = 'driver_work_week'
